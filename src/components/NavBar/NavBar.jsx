@@ -10,7 +10,7 @@ const NavBar = ({user, logoutUser})=>{
         <ul className='menu'>
           
           <li><Link to="/">Home</Link></li>
-          <li><Link to="/profile">Usuario</Link></li>
+          {/* <li><Link to="/profile">Usuario</Link></li> */}
           
           {user ? (user.role === "admin" ? <NavAdmin /> : <NavUser/>) : null}
 
@@ -18,6 +18,9 @@ const NavBar = ({user, logoutUser})=>{
           para valorar si hay Login o Logout */}
           <li>
           {user ? <button onClick={logoutUser}>Logout</button> : <Link to="/login">Login</Link>}
+          </li>
+          <li><Link to='/check'>Check</Link>
+
           </li>
         </ul>
       </nav>

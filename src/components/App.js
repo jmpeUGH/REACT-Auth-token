@@ -12,6 +12,7 @@ import Profile from './Profile/Profile';
 import AuthRoutes from './AuthRoutes/AuthRoutes';
 import RegisterUser from './User/RegisterUser';
 import {API} from '../services/api';
+import Check from './Check';
 
 
 /*
@@ -44,7 +45,13 @@ function App() {
   //Como cuando carga la página el ususario no está definido, lo informamos nulo
 
   //PRIMER ESTADO DEL USER null, no está definido
-  const [user, setUser] = useState(null)
+  //Cuando queremos guardar en user lo que está en sessionStorage, tenemos que hacer el contrario del Strigify
+  //Para esto, creamos la variable ssData
+  const ssData =JSON.parse(sessionStorage.getItem('token'));
+  
+  const [user, setUser] = useState(ssData || null);
+
+  //console.log(user);
 
   //Como aquí es donde tengo la variable de estado de user que va a necesitar el login
   //Aquí es donde vamos a crear una función para enviar los props a Login
@@ -74,21 +81,48 @@ function App() {
   }
 
   const logoutUser = ()=>{
-    setUser(null)
-    navigate("/")
+    setUser(null);
+    sessionStorage.removeItem('token');
+    navigate("/");
   }
 
   // logoutUser debo enviarla también al Nav porque es ahí donde se produce el evento
 
   const loginUser = (formData, prevRoute)=>{
     //Este find es para cuando hacemos consultas a userList
-    //const existsUser = userList.find((user)=> user.email === formData.email  && user.password===formData.password)
+    try {
+       API.post('/users/login', formData)
+      .then((res)=>{
+      console.log(res.data);
+      setUser(res.data.userInfo);
+      sessionStorage.setItem('token', JSON.stringify(res.data));//Guardamos todo: token y UserInfo
+      //Ahora variamos la variable de estado user
+      });
+    } catch (error) {
+      setLoginError(error)
+      console.log(loginError)
+      navigate(prevRoute || "/")
+      
+    }
 
     //Busco con axios con un método POST porque tengo que enviar los que está metido en formdata
     //console.log(formData)
-    API.post('/users/login', formData).then((res)=>{
-      //console.log(res.data);
-    });
+   
+
+      
+
+      //console.log (existsUser);
+      // if(existsUser){
+      //   setLoginError("")
+      //   navigate(prevRoute || "/")
+      // }
+      // else{
+      //   setUser(false)
+      //   setLoginError("Usuario o contraseña incorrecta")
+      // }
+    
+    
+
 /*
     if(existsUser){
 
@@ -122,6 +156,7 @@ function App() {
         {/* A Profile le envío los valores de user para que pueda pintarlos */}
         
         <Route path="/login" element={<Login loginUser={loginUser} loginError={loginError}/>}></Route>
+        <Route path="/check" element={<Check user={user} />}></Route>
         <Route path="/*" element={<NotFound />} />
       </Routes>
       

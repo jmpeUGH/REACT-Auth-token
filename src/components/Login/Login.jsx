@@ -45,7 +45,7 @@ const Login = ({loginUser,loginError})=>{
         //En loginUser también tengo que enviarle el prevRoute del state para que me devuelva a donde estaba si no estaba en home
         console.log(formData)
         loginUser(formData, state ? state.prevRoute : null)
-        setFormData(initial_state)
+        //setFormData(initial_state)
     }
 
     return(
